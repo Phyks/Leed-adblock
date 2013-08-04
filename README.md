@@ -8,6 +8,8 @@ This is a plugin for Leed written by Phyks (phyks@phyks.me) to allow a leed user
 
 This behavior can be fully customized in a per feed way (with either a blacklist or a whitelist). You can also choose to disable images only on mobile browsers.
 
+**Important note :** To install the plugin, just do as usual with leed plugins. The adblock folder goes in the plugins directory of your leed installation. **Don't rename** the adblock directory unless you know what you do (you will need to change some paths values in the script itself).
+
 ## Constants (_adblock_constants.php_ file)
 
 <table>
