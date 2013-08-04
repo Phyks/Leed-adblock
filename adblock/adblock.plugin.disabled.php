@@ -76,7 +76,13 @@ function adblock_plugin_treat_events(&$events) {
         if($filter_flash) {
             if(($block_flash && !in_array($event->getFeed(), $flash_except_list)) || (!$block_flash && in_array($event->getFeed(), $flash_except_list))) {
                 //Replace flash content
-                $event->setContent($filered_content); // TODO
+                $object_list_in_event = preg_match_all("#<object.{0,}>.{0,}</object>#U", $filtered_content);
+                
+                foreach($object_list_in_event as $object) {
+                    $filtered_content = str_replace($object[0], "", $filtered_content);
+                }
+
+                $event->setContent($filtered_content);
             }
         }
     
@@ -87,7 +93,7 @@ function adblock_plugin_treat_events(&$events) {
                 $img_list_in_event = preg_match_all("#<img.{0,}src=[\"'](.{1,})[\"'].{0,}/>#U", $filtered_content);
                 
                 foreach($img_list_in_event as $img) {
-                    $filtered_event = str_replace($img[0], "", $filtered_content);
+                    $filtered_content = str_replace($img[0], "", $filtered_content);
                 }
 
                 $event->setContent($filtered_content);
