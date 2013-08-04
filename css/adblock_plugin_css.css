@@ -1,0 +1,11 @@
+#adblockSettingsBloc {
+    display: none;
+}
+
+#adblockSettingsBloc textarea {
+    width: 75%;
+}
+
+#adblock_settings_submit {
+    text-align: center;
+}
