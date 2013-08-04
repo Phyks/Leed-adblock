@@ -8,10 +8,85 @@
 @description The adblock plugin for leed allows to block embedded flash contents and / or images in feeds. You can set it fine-grained for each feed. You can also disable images only for mobile devices.
  */
 
+function adblock_isMobileDevice() {
+    return preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]);
+}
+
+function adblock_trim_list($input) {
+    $output = array();
+
+    foreach($input as $key=>$value) {
+        $output[$key] = trim($value, "\t\n\r\0\x0B,");
+    }
+    return $output;
+}
 
 function adblock_plugin_treat_events(&$events) {
+    //Set params
+    $adblock_constants = file_get_contents("plugins/adblock/adblock_constants.php");
+    $adblock_constants = explode("\n", $adblock_constants);
+
+    $adblock_params = array();
+    foreach($adblock_constants as $adblock_constant) {
+        if(trim($adblock_constant) != "") {
+            $adblock_constant = explode("=", $adblock_constant);
+            $adblock_params[trim($adblock_constant[0])] = trim($adblock_constant[1]);
+        }
+    }
+
+    if(isset($adblock_params["flash_enabled"]) && $adblock_params["flash_enabled"] == "1") {
+        $filter_flash = true;
+        if(isset($adblock_params["flash_block"]) && $adblock_params["flash_block"] == "1") {
+           $block_flash = true; 
+        }
+        else {
+            $block_flash = false;
+        }
+    }
+    else {
+        $filter_flash = false;
+    }
+    $flash_except_list = explode(',', trim($adblock_params["flash_list"], "\t\n\r\0\x0B,"));
+    $flash_except_list = adblock_trim_list($flash_except_list);
+
+    if(isset($adblock_params["img_enabled"]) && $adblock_params["img_enabled"] == "1") {
+        $filter_img = true;
+        if(isset($adblock_params["img_block"]) && $adblock_params["img_block"] == "1") {
+            $block_img = true;
+        }
+        else {
+            $block_img = false;
+        }
+
+        if(isset($adblock_params["img_block"]) && $adblock_params["img_block"] == "1" && !adblock_isMobileDevice()) { //If filter only on mobile devices and not a mobile device
+            $filter_img = false;
+        }
+    }
+    else {
+        $filter_img = false;
+    }
+    $img_except_list = explode(',', trim($adblock_params["img_list"], "\t\n\r\0\x0B,"));
+    $img_except_list = adblock_trim_list($flash_except_list);
+
+
     foreach($events as $event) {
         $old_content = $event->getContent();
+
+        // Flash handling
+        if($filter_flash) {
+            if(($block_flash && !in_array($event->getFeed(), $flash_except_list)) || (!$block_flash && in_array($event->getFeed(), $flash_except_list))) {
+                //Replace flash content
+                $event->setContent($old_content); // TODO
+            }
+        }
+        
+        // Images handling
+        if($filter_img) {
+            if(($block_img && !in_array("", $img_except_list)) || (!$block_img && in_array("", $img_except_list))) {
+                //Replace imges
+                $event->setContent($old_content); // TODO
+            }
+        }
     }
 }
 
@@ -36,14 +111,14 @@ function adblock_plugin_setting_bloc(&$myUser) {
     $flash_enabled = (isset($adblock_params["flash_enabled"]) && $adblock_params["flash_enabled"] == "1") ? true : false;
     $flash_block = (isset($adblock_params["flash_block"]) && $adblock_params["flash_block"] == "1") ? true : false;
     if(isset($adblock_params["flash_list"]))
-        $flash_list = str_replace(",", "\n", $adblock_params["flash_list"]);
+        $flash_list = str_replace(",", "\n", trim($adblock_params["flash_list"], "\t\n\r\0\x0B,"));
     else
         $flash_list = "";
     $img_enabled = (isset($adblock_params["img_enabled"]) && $adblock_params["img_enabled"] == "1") ? true : false;
     $img_only_mobiles = (isset($adblock_params["img_only_mobiles"]) && $adblock_params["img_only_mobiles"] == 1) ? true : false;
     $img_block = (isset($adblock_params["img_block"]) && $adblock_params["img_block"] == "1") ? true : false;
     if(isset($adblock_params["img_list"]))
-        $img_list = str_replace(",", "\n", $adblock_params["img_list"]);
+        $img_list = str_replace(",", "\n", trim($adblock_params["img_list"], "\t\n\r\0\x0B,"));
     else
         $img_list = "";
 
@@ -106,14 +181,14 @@ function adblock_plugin_setting_update($_) {
     if($_['action'] == 'adblock_update') {
         $flash_enabled = (int) $_['flash_adblock_enable'];
         $flash_block = (int) $_['flash_adblock_default_behavior'];
-        $flash_list = str_replace("\r\n", ",", $_["flash_adblock_list"]);
-        $flash_list = str_replace("\n", ",", $flash_list);
+        $flash_list = str_replace("\r\n", ",", trim($_["flash_adblock_list"]));
+        $flash_list = str_replace("\n", ",", trim($flash_list));
 
         $img_enabled = (int) $_['img_adblock_enable'];
         $img_block = (int) $_['img_adblock_default_behavior'];
         $img_only_mobiles = (int) $_["img_adblock_only_mobiles"];
-        $img_list = str_replace("\r\n", ",", $_["img_adblock_list"]);
-        $img_list = str_replace("\n", ",", $img_list);
+        $img_list = str_replace("\r\n", ",", trim($_["img_adblock_list"]));
+        $img_list = str_replace("\n", ",", trim($img_list));
 
         if(file_put_contents("plugins/adblock/adblock_constants.php", "flash_enabled = ".$flash_enabled."\nflash_block = ".$flash_block."\nflash_list = ".$flash_list."\nimg_enabled = ".$img_enabled."\nimg_block = ".$img_block."\nimg_only_mobiles = ".$img_only_mobiles."\nimg_list = ".$img_list))
             header('location: settings.php');
