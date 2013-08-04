@@ -1,7 +1,7 @@
-flash_enabled = 1
-flash_block = 1
-flash_list = 1,2,3
-img_enabled = 1
-img_block = 1
-img_only_mobiles = 
-img_list = 
+flash_enabled = 0
+flash_block = 0
+flash_list = 1,2,3,4
+img_enabled = 0
+img_block = 0
+img_only_mobiles = 1
+img_list = 0,1

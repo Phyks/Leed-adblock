@@ -3,9 +3,9 @@
 @name Adblock
 @author Phyks <phyks@phyks.me>
 @link http://www.phyks.me
-@licence BEERWARE
+@licence BEERWARE (See README.md file)
 @version 2.0.0
-@description Le plugin adblock permet d'empêcher le lancement automatique de contenus embed de type "flash" et notamment des pubs dans les flux RSS. Par défaut, tous les contenus sont bloqués. Il est possible de modifier ce comportement et de régler finement par flux.
+@description The adblock plugin for leed allows to block embedded flash contents and / or images in feeds. You can set it fine-grained for each feed. You can also disable images only for mobile devices.
  */
 
 
@@ -104,15 +104,16 @@ function adblock_plugin_setting_bloc(&$myUser) {
 
 function adblock_plugin_setting_update($_) {
     if($_['action'] == 'adblock_update') {
-        $flash_enabled = int($_['flash_adblock_enable']);
-        $flash_block = int($_['flash_adblock_default_behavior']);
-        $flash_list = '';
+        $flash_enabled = (int) $_['flash_adblock_enable'];
+        $flash_block = (int) $_['flash_adblock_default_behavior'];
+        $flash_list = str_replace("\n", ",", $_["flash_adblock_list"]);
 
-        $img_enabled = int($_['img_adblock_enable']);
-        $img_block = int($_['img_adblock_default_behavior']);
-        $img_list = '';
+        $img_enabled = (int) $_['img_adblock_enable'];
+        $img_block = (int) $_['img_adblock_default_behavior'];
+        $img_only_mobiles = (int) $_["img_adblock_only_mobiles"];
+        $img_list = str_replace("\n", ",", $_["img_adblock_list"]);
 
-        if(file_put_contents("plugins/adblock/adblock_constants.php", 'flash_enabled = '.$flash_enabled.'\nflash_block = '.$flash_block.'\nflash_list = '.$flash_list.'\nimg_enabled = '.$img_enabled.'\nimg_block = '.$img_block.'\nimg_list = '.$img_list))
+        if(file_put_contents("plugins/adblock/adblock_constants.php", "flash_enabled = ".$flash_enabled."\nflash_block = ".$flash_block."\nflash_list = ".$flash_list."\nimg_enabled = ".$img_enabled."\nimg_block = ".$img_block."\nimg_only_mobiles = ".$img_only_mobiles."\nimg_list = ".$img_list))
             header('location: settings.php');
         else
             exit("Unable to write parameters to plugins/adblock/adblock_constants.php. Check permissions on the folders.");
