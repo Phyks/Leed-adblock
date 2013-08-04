@@ -9,7 +9,7 @@
  */
 
 
-function adblock_plugin_treatment(&$events) {
+function adblock_plugin_treat_events(&$events) {
     foreach($events as $event) {
         $old_content = $event->getContent();
     }
@@ -88,13 +88,26 @@ function adblock_plugin_setting_bloc(&$myUser) {
 }
 
 function adblock_plugin_setting_update($_) {
+    if($_['action'] == 'adblock_update') {
+        $flash_enabled = int($_['flash_adblock_enable']);
+        $flash_block = int($_['flash_adblock_default_behavior'])
+        $flash_list = '';
 
+        $img_enabled = int($_['img_adblock_enable']);
+        $img_block = int($_['img_adblock_default_behavior'])
+        $img_list = '';
+
+        if(file_put_contents("plugins/adblock/adblock_constants.php", 'flash_enabled = '.$flash_enabled.'\nflash_block = '.$flash_block.'\nflash_list = '.$flash_list.'\nimg_enabled = '.$img_enabled.'\nimg_block = '.$img_block.'\nimg_list = '.$img_list))
+            header('location: settings.php');
+        else
+            exit("Unable to write parameters to plugins/adblock/adblock_constants.php. Check permissions on the folders.");
+    }
 }
 
 Plugin::addCSS("/css/adblock_plugin_css.css");
 Plugin::addJS("/js/adblock_plugin_js.js");
 
-Plugin::addHook("index_post_treatment", "adblock_plugin_treatment");
+Plugin::addHook("index_post_treatment", "adblock_plugin_treat_events");
 
 Plugin::addHook("setting_post_link", "adblock_plugin_setting_link");
 Plugin::addHook("setting_post_section", "adblock_plugin_setting_bloc");
