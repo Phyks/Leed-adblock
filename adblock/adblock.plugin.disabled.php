@@ -106,12 +106,14 @@ function adblock_plugin_setting_update($_) {
     if($_['action'] == 'adblock_update') {
         $flash_enabled = (int) $_['flash_adblock_enable'];
         $flash_block = (int) $_['flash_adblock_default_behavior'];
-        $flash_list = str_replace("\n", ",", $_["flash_adblock_list"]);
+        $flash_list = str_replace("\r\n", ",", $_["flash_adblock_list"]);
+        $flash_list = str_replace("\n", ",", $flash_list);
 
         $img_enabled = (int) $_['img_adblock_enable'];
         $img_block = (int) $_['img_adblock_default_behavior'];
         $img_only_mobiles = (int) $_["img_adblock_only_mobiles"];
-        $img_list = str_replace("\n", ",", $_["img_adblock_list"]);
+        $img_list = str_replace("\r\n", ",", $_["img_adblock_list"]);
+        $img_list = str_replace("\n", ",", $img_list);
 
         if(file_put_contents("plugins/adblock/adblock_constants.php", "flash_enabled = ".$flash_enabled."\nflash_block = ".$flash_block."\nflash_list = ".$flash_list."\nimg_enabled = ".$img_enabled."\nimg_block = ".$img_block."\nimg_only_mobiles = ".$img_only_mobiles."\nimg_list = ".$img_list))
             header('location: settings.php');
