@@ -70,21 +70,27 @@ function adblock_plugin_treat_events(&$events) {
 
 
     foreach($events as $event) {
-        $old_content = $event->getContent();
+        $filtered_content = $event->getContent();
 
         // Flash handling
         if($filter_flash) {
             if(($block_flash && !in_array($event->getFeed(), $flash_except_list)) || (!$block_flash && in_array($event->getFeed(), $flash_except_list))) {
                 //Replace flash content
-                $event->setContent($old_content); // TODO
+                $event->setContent($filered_content); // TODO
             }
         }
-        
+    
         // Images handling
         if($filter_img) {
             if(($block_img && !in_array("", $img_except_list)) || (!$block_img && in_array("", $img_except_list))) {
-                //Replace imges
-                $event->setContent($old_content); // TODO
+                //Replace images
+                $img_list_in_event = preg_match_all("#<img.{0,}src=[\"'](.{1,})[\"'].{0,}/>#U", $filtered_content);
+                
+                foreach($img_list_in_event as $img) {
+                    $filtered_event = str_replace($img[0], "", $filtered_content);
+                }
+
+                $event->setContent($filtered_content);
             }
         }
     }
