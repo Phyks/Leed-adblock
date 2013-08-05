@@ -9,3 +9,13 @@
 #adblock_settings_submit {
     text-align: center;
 }
+
+.blocked_image {
+    display: inline-block;
+    background-color: white;
+    color: rgb(241, 101, 41);
+    font-weight: bold;
+    text-align: center;
+    font-size: 2em;
+    padding: 0.2em;
+}

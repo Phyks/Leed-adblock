@@ -1,8 +1,8 @@
 flash_enabled = 0
 flash_block = 0
 flash_list = 
-img_enabled = 0
-img_block = 0
+img_enabled = 1
+img_block = 1
 img_only_mobiles = 0
 img_list = 
-elegant_degradation = 
+elegant_degradation = 0

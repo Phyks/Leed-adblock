@@ -16,13 +16,16 @@ function adblock_trim_list($input) {
     $output = array();
 
     foreach($input as $key=>$value) {
-        $output[$key] = trim($value, "\t\n\r\0\x0B,");
+        $output[$key] = trim($value, "\t\n\r\0\x0B,\"");
     }
     return $output;
 }
 
 function adblock_plugin_treat_events(&$events) {
     //Set params
+    $configurationManager = new Configuration();
+    $partial = $configurationManager->get('articleView') == "partial";
+
     $adblock_constants = file_get_contents("plugins/adblock/adblock_constants.php");
     $adblock_constants = explode("\n", $adblock_constants);
 
@@ -58,7 +61,7 @@ function adblock_plugin_treat_events(&$events) {
             $block_img = false;
         }
 
-        if(isset($adblock_params["img_block"]) && $adblock_params["img_block"] == "1" && !adblock_isMobileDevice()) { //If filter only on mobile devices and not a mobile device
+        if(isset($adblock_params["img_only_mobiles"]) && $adblock_params["img_only_mobiles"] == "1" && !adblock_isMobileDevice()) { //If filter only on mobile devices and not a mobile device
             $filter_img = false;
         }
     }
@@ -71,7 +74,7 @@ function adblock_plugin_treat_events(&$events) {
     $elegant_degradation = (isset($adblock_params["elegant_degradation"]) && $adblock_params["elegant_degradation"] == "1") ? true : false;
 
     foreach($events as $event) {
-        $filtered_content = $event->getContent();
+        $filtered_content = ($partial) ? $event->getDescription : $event->getContent();
 
         // Flash handling
         if($filter_flash) {
@@ -84,7 +87,7 @@ function adblock_plugin_treat_events(&$events) {
                         $filtered_content = str_replace($object[0], "", $filtered_content);
                     }
                     else {
-
+                        
                     }
                 }
 
@@ -94,20 +97,30 @@ function adblock_plugin_treat_events(&$events) {
     
         // Images handling
         if($filter_img) {
-            if(($block_img && !in_array("", $img_except_list)) || (!$block_img && in_array("", $img_except_list))) {
+            if(($block_img && !in_array($event->getFeed(), $img_except_list)) || (!$block_img && in_array($event->getFeed(), $img_except_list))) {
                 //Replace images
-                $img_list_in_event = preg_match_all("#<img.{0,}src=[\"'](.{1,})[\"'].{0,}/>#U", $filtered_content);
-                
+                preg_match_all("#<img.{0,}src=[\"'](.{1,})[\"'].{0,}/?(img)?>#U", $filtered_content, $img_list_in_event, PREG_SET_ORDER);
+
                 foreach($img_list_in_event as $img) {
-                    if($elegant_degradation) {
-                        $filtered_content = str_replace($img[0], "", $filtered_content);
+                    if(!$elegant_degradation) {
+                        $replacement_content = '
+                                <span class="blocked_image">X</span>
+                            ';
+                        $filtered_content = str_replace($img[0], $replacement_content, $filtered_content);
                     }
                     else {
-
+                        $content_size = getimagesize($img[1]); //Index 0 is width, index 1 is height
+                        $replacement_content = '
+                                <span class="blocked_image" style="width:'.(int) $content_size[0].'px; height:'.(int) $content_size[1].'px;"></span>
+                            ';
+                        $filtered_content = str_replace($img[0], $replacement_content, $filtered_content);
                     }
                 }
 
-                $event->setContent($filtered_content);
+                if($partial)
+                    $event->setDescription($filtered_content);
+                else
+                    $event->setContent($filtered_content);
             }
         }
     }
@@ -147,7 +160,7 @@ function adblock_plugin_setting_bloc(&$myUser) {
 
     $elegant_degradation = (isset($adblock_params["elegant_degradation"]) && $adblock_params["elegant_degradation"] == "1") ? true : false;
 
-    $gd_available = function_exists("getimagesize");
+    $getimagesize_available = function_exists("getimagesize") && ((ini_get("allow_url_fopen") == "1") ? true : false);
 
     echo '
         <section id="adblockSettingsBloc">
@@ -199,7 +212,7 @@ function adblock_plugin_setting_bloc(&$myUser) {
                 </fieldset>
                 <p>
                     Elegant degradation (replace content with same-size content) ?<br/>
-                    <input type="radio" name="adblock_elegant_degradation" value="1" id="adblock_elegant_degradation_yes" '.(($elegant_degradation) ? 'checked="checked"' : '').' '.((!$gd_available) ? 'disabled' : '').'/><label for="adblock_elegant_degradation_yes">Yes</label>'.((!$gd_available) ? ' <em>(Not available because GD seems to not be installed on your system)</em>' : '').'<br/>
+                    <input type="radio" name="adblock_elegant_degradation" value="1" id="adblock_elegant_degradation_yes" '.(($elegant_degradation) ? 'checked="checked"' : '').' '.((!$getimagesize_available) ? 'disabled' : '').'/><label for="adblock_elegant_degradation_yes">Yes</label>'.((!$getimagesize_available) ? ' <em>(Not available because the getimagesize seems to not be available on your system or allow_url_fopen is set to Off in php.ini)</em>' : '').'<br/>
                     <input type="radio" name="adblock_elegant_degradation" value="0" id="adblock_elegant_degradation_no" '.((!$elegant_degradation) ? 'checked="checked"' : '').'/><label for="adblock_elegant_degradation_no">No</label>
                 </p>
                 <p id="adblock_settings_submit">

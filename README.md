@@ -8,7 +8,7 @@ This is a plugin for Leed written by Phyks (phyks@phyks.me) to allow a leed user
 
 This behavior can be fully customized in a per feed way (with either a blacklist or a whitelist). You can also choose to disable images only on mobile browsers.
 
-**Important note :** To install the plugin, just do as usual with leed plugins. The adblock folder goes in the plugins directory of your leed installation. **Don't rename** the adblock directory unless you know what you do (you will need to change some paths values in the script itself). For an elegant degradation, _ie_ replacement of the deleted content by neutral content of the same size, you will need the GD library.
+**Important note :** To install the plugin, just do as usual with leed plugins. The adblock folder goes in the plugins directory of your leed installation. **Don't rename** the adblock directory unless you know what you do (you will need to change some paths values in the script itself). For an elegant degradation, _ie_ replacement of the deleted content by neutral content of the same size, you will need the getimagesize available in PHP and the directive _allow_url_fopen_ set to _On_ in your php.ini config file (the plugin will verify this for you).
 
 **Note :** This will replace all images (found by searching for &lt;img&gt; tags) and all embedded objects (found by searching for &lt;object&gt; tags). This will only mask them when you display the page (and not load them) on a server side. If you click on the replacement content, it will load the masked content. So, the content is always downloaded from the external server to your running leed instance, but is only downloaded on-demand from to your device.
 
