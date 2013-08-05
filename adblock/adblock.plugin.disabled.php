@@ -75,6 +75,7 @@ function adblock_plugin_treat_events(&$events) {
 
     foreach($events as $event) {
         $filtered_content = ($partial) ? $event->getDescription : $event->getContent();
+        $modified = false;
 
         // Flash handling
         if($filter_flash) {
@@ -104,25 +105,27 @@ function adblock_plugin_treat_events(&$events) {
                 foreach($img_list_in_event as $img) {
                     if(!$elegant_degradation) {
                         $replacement_content = '
-                                <span class="blocked_image">X</span>
+                                <span class="blocked_image" onclick="return adblock_unblock_img(this, \''.$img[1].'\');">X</span>
                             ';
                         $filtered_content = str_replace($img[0], $replacement_content, $filtered_content);
                     }
                     else {
                         $content_size = getimagesize($img[1]); //Index 0 is width, index 1 is height
                         $replacement_content = '
-                                <span class="blocked_image" style="width:'.(int) $content_size[0].'px; height:'.(int) $content_size[1].'px;"></span>
+                                <span class="blocked_image" style="width:'.(int) $content_size[0].'px; height:'.(int) $content_size[1].'px; max-width: 100%;" onclick="return adblock_unblock_img(this, \''.$img[1].'\'):"></span>
                             ';
                         $filtered_content = str_replace($img[0], $replacement_content, $filtered_content);
                     }
                 }
 
-                if($partial)
-                    $event->setDescription($filtered_content);
-                else
-                    $event->setContent($filtered_content);
+                $modified = true;
             }
         }
+
+        if($partial)
+            $event->setDescription($filtered_content);
+        else
+            $event->setContent($filtered_content);
     }
 }
 
