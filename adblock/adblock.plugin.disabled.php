@@ -81,18 +81,28 @@ function adblock_plugin_treat_events(&$events) {
         if($filter_flash) {
             if(($block_flash && !in_array($event->getFeed(), $flash_except_list)) || (!$block_flash && in_array($event->getFeed(), $flash_except_list))) {
                 //Replace flash content
-                $object_list_in_event = preg_match_all("#<object.{0,}>.{0,}</object>#U", $filtered_content);
-                
+                preg_match_all("#<iframe.{0,}/(iframe)?>#U", $filtered_content, $object_list_in_event, PREG_SET_ORDER);
+
                 foreach($object_list_in_event as $object) {
-                    if($elegant_degradation) {
-                        $filtered_content = str_replace($object[0], "", $filtered_content);
+                    if(!$elegant_degradation) {
+                        $replacement_content = '
+                            <span class="blocked_flash" onclick="return adblock_unblock_flash(this, \''.htmlspecialchars($object[0]).'\');">X</span>
+                            ';
+                        $filtered_content = str_replace($object[0], $replacement_content, $filtered_content);
                     }
                     else {
-                        
+                        preg_match("#width=[\"']([0-9]{1,})[\"']#U", $object[0], $width);
+                        preg_match("#height=[\"']([0-9]{1,})[\"']#U", $object[0], $height);
+                        $font_size = min($width[1], $height[1]);
+
+                        $replacement_content = '
+                                <span class="blocked_flash" '.((!empty($width[1]) && !empty($height[1])) ? 'style="width: '.$width[1].'px; height: '.$height[1].'px; padding: 0; padding-top: '.((int) $font_size) / 2 .'px; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; font-size: '.$font_size.'px;"' : '').' onclick="return adblock_unblock_flash(this, \''.htmlspecialchars($object[0]).'\');">X</span>
+                            ';
+                        $filtered_content = str_replace($object[0], $replacement_content, $filtered_content);
                     }
                 }
 
-                $event->setContent($filtered_content);
+                $modified = true;
             }
         }
     
@@ -105,14 +115,15 @@ function adblock_plugin_treat_events(&$events) {
                 foreach($img_list_in_event as $img) {
                     if(!$elegant_degradation) {
                         $replacement_content = '
-                                <span class="blocked_image" onclick="return adblock_unblock_img(this, \''.$img[1].'\');">X</span>
+                                <span class="blocked_image" onclick="return adblock_unblock_img(this, \''.urlencode($img[1]).'\');">X</span>
                             ';
                         $filtered_content = str_replace($img[0], $replacement_content, $filtered_content);
                     }
                     else {
                         $content_size = getimagesize($img[1]); //Index 0 is width, index 1 is height
+                        $font_size = min($content_size[0], $content_size[1]);
                         $replacement_content = '
-                                <span class="blocked_image" style="width:'.(int) $content_size[0].'px; height:'.(int) $content_size[1].'px; max-width: 100%;" onclick="return adblock_unblock_img(this, \''.$img[1].'\'):"></span>
+                                <span class="blocked_image" style="width:'.(int) $content_size[0].'px; height:'.(int) $content_size[1].'px; padding:0; padding-top: '.((int) $font_size) / 2 .'px; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; font-size: '.$font_size.'px;" onclick="return adblock_unblock_img(this, \''.urlencode($img[1]).'\'):">X</span>
                             ';
                         $filtered_content = str_replace($img[0], $replacement_content, $filtered_content);
                     }
@@ -121,11 +132,13 @@ function adblock_plugin_treat_events(&$events) {
                 $modified = true;
             }
         }
-
-        if($partial)
-            $event->setDescription($filtered_content);
-        else
-            $event->setContent($filtered_content);
+        
+        if($modified) {
+            if($partial)
+                $event->setDescription($filtered_content);
+            else
+                $event->setContent($filtered_content);
+        }
     }
 }
 

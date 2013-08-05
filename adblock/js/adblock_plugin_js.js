@@ -13,3 +13,12 @@ function adblock_unblock_img(span, url) {
     $(span).removeClass("blocked_image");
     return false;
 }
+
+function adblock_unblock_flash(span, new_content) {
+    if($(span).html() != "X")
+        return true;
+
+    $(span).html(new_content);
+    $(span).removeClass("blocked_flash");
+    return false;
+}
