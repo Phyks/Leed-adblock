@@ -68,6 +68,7 @@ function adblock_plugin_treat_events(&$events) {
     $img_except_list = explode(',', trim($adblock_params["img_list"], "\t\n\r\0\x0B,"));
     $img_except_list = adblock_trim_list($flash_except_list);
 
+    $elegant_degradation = (isset($adblock_params["elegant_degradation"]) && $adblock_params["elegant_degradation"] == "1") ? true : false;
 
     foreach($events as $event) {
         $filtered_content = $event->getContent();
@@ -79,7 +80,12 @@ function adblock_plugin_treat_events(&$events) {
                 $object_list_in_event = preg_match_all("#<object.{0,}>.{0,}</object>#U", $filtered_content);
                 
                 foreach($object_list_in_event as $object) {
-                    $filtered_content = str_replace($object[0], "", $filtered_content);
+                    if($elegant_degradation) {
+                        $filtered_content = str_replace($object[0], "", $filtered_content);
+                    }
+                    else {
+
+                    }
                 }
 
                 $event->setContent($filtered_content);
@@ -93,7 +99,12 @@ function adblock_plugin_treat_events(&$events) {
                 $img_list_in_event = preg_match_all("#<img.{0,}src=[\"'](.{1,})[\"'].{0,}/>#U", $filtered_content);
                 
                 foreach($img_list_in_event as $img) {
-                    $filtered_content = str_replace($img[0], "", $filtered_content);
+                    if($elegant_degradation) {
+                        $filtered_content = str_replace($img[0], "", $filtered_content);
+                    }
+                    else {
+
+                    }
                 }
 
                 $event->setContent($filtered_content);
@@ -133,6 +144,10 @@ function adblock_plugin_setting_bloc(&$myUser) {
         $img_list = str_replace(",", "\n", trim($adblock_params["img_list"], "\t\n\r\0\x0B,"));
     else
         $img_list = "";
+
+    $elegant_degradation = (isset($adblock_params["elegant_degradation"]) && $adblock_params["elegant_degradation"] == "1") ? true : false;
+
+    $gd_available = function_exists("getimagesize");
 
     echo '
         <section id="adblockSettingsBloc">
@@ -182,6 +197,11 @@ function adblock_plugin_setting_bloc(&$myUser) {
                         <textarea name="img_adblock_list" rows="7">'.$img_list.'</textarea>
                     </div>
                 </fieldset>
+                <p>
+                    Elegant degradation (replace content with same-size content) ?<br/>
+                    <input type="radio" name="adblock_elegant_degradation" value="1" id="adblock_elegant_degradation_yes" '.(($elegant_degradation) ? 'checked="checked"' : '').' '.((!$gd_available) ? 'disabled' : '').'/><label for="adblock_elegant_degradation_yes">Yes</label>'.((!$gd_available) ? ' <em>(Not available because GD seems to not be installed on your system)</em>' : '').'<br/>
+                    <input type="radio" name="adblock_elegant_degradation" value="0" id="adblock_elegant_degradation_no" '.((!$elegant_degradation) ? 'checked="checked"' : '').'/><label for="adblock_elegant_degradation_no">No</label>
+                </p>
                 <p id="adblock_settings_submit">
                     <input type="submit" class="button" value="Save"/>
                 </p>
@@ -202,7 +222,9 @@ function adblock_plugin_setting_update($_) {
         $img_list = str_replace("\r\n", ",", trim($_["img_adblock_list"]));
         $img_list = str_replace("\n", ",", trim($img_list));
 
-        if(file_put_contents("plugins/adblock/adblock_constants.php", "flash_enabled = ".$flash_enabled."\nflash_block = ".$flash_block."\nflash_list = ".$flash_list."\nimg_enabled = ".$img_enabled."\nimg_block = ".$img_block."\nimg_only_mobiles = ".$img_only_mobiles."\nimg_list = ".$img_list))
+        $elegant_degradation = (int) $_["adblock_elegant_degradation"];
+
+        if(file_put_contents("plugins/adblock/adblock_constants.php", "flash_enabled = ".$flash_enabled."\nflash_block = ".$flash_block."\nflash_list = ".$flash_list."\nimg_enabled = ".$img_enabled."\nimg_block = ".$img_block."\nimg_only_mobiles = ".$img_only_mobiles."\nimg_list = ".$img_list."\nelegant_degradation = ".$elegant_degradation))
             header('location: settings.php');
         else
             exit("Unable to write parameters to plugins/adblock/adblock_constants.php. Check permissions on the folders.");
