@@ -16,7 +16,7 @@ Please report (via the issue system on github or send me an email) any problems 
 
 **Note :** This will replace all images (found by searching for &lt;img&gt; tags) and all embedded objects (found by searching for iframes, as all flash content I found in my feeds are embedded _via_ iframes). This will only mask them when you display the page (and not load them) on a server side. If you click on the replacement content, it will load the masked content. So, the content is always downloaded from the external server to your running leed instance, but is only downloaded on-demand from to your device.
 
-## Constants (_adblock_constants.php_ file)
+## Constants (adblock_constants.php file)
 
 <table>
 	<tr>
@@ -24,36 +24,36 @@ Please report (via the issue system on github or send me an email) any problems 
         <th>Possible values</th>
     </tr>
     <tr>
-    	<td>_flash_enabled_</td>
-        <td>_0_ to disable flash blocking, _1_ to enable</td>
+    	<td>flash_enabled</td>
+        <td>0 to disable flash blocking, 1 to enable</td>
     </tr>
     <tr>
-    	<td>_flash_block_</td>
-        <td>_1_ to block all flash content by default, _0_ to allow flash and block with a blacklist (per feed)</td>
+    	<td>flash_block</td>
+        <td>1 to block all flash content by default, 0 to allow flash and block with a blacklist (per feed)</td>
     </tr>
     <tr>
-    	<td>_flash_list_</td>
-        <td>Comma-separated list of feeds to allow (if _flash_block_ is _1_) or to block (if _flash_block_ is _0_)</td>
+    	<td>flash_list</td>
+        <td>Comma-separated list of feeds to allow (if flash_block is 1) or to block (if flash_block is 0)</td>
     </tr>
     <tr>
-    	<td>_img_enabled_</td>
-        <td>_1_ to enable image blocking, _0_ to disable</td>
+    	<td>img_enabled</td>
+        <td>1 to enable image blocking, 0 to disable</td>
     </tr>
     <tr>
-    	<td>_img_block_</td>
-        <td>_1_ to blockall images by default, _0_ to allow images and block selectively with a blacklist (per feed)</td>
+    	<td>img_block</td>
+        <td>1 to blockall images by default, 0 to allow images and block selectively with a blacklist (per feed)</td>
     </tr>
     <tr>
-    	<td>_img_only_mobiles_</td>
-        <td>_1_ to make all the rules relative to images work only on mobiles, _0_ else</td>
+    	<td>img_only_mobiles</td>
+        <td>1 to make all the rules relative to images work only on mobiles, 0 else</td>
     </tr>
     <tr>
-    	<td>_img_list_</td>
-        <td>Comma-separated list of feeds to allow (if _img_block_ is _1_) or to block (if _img_block_ is _0_)</td>
+    	<td>img_list</td>
+        <td>Comma-separated list of feeds to allow (if img_block is 1) or to block (if img_block is 0)</td>
     </tr>
 </table>
 
-For the _*_list_ paramaters, the comma-separated list is a comma-separated list of feed ids. You can find these ids in the address bar when viewing the feed in list. The URL in the address bar should be like this (just take the ID in the URL) :
+For the _*_list_ parameters, the comma-separated list is a comma-separated list of feed ids. You can find these ids in the address bar when viewing the feed in list. The URL in the address bar should be like this (just take the ID in the URL) :
 	
     http://LEED_URL/index.php?action=selectedFeed&feed=ID
 
