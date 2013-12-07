@@ -26,7 +26,7 @@ function adblock_plugin_treat_events(&$events) {
     $configurationManager = new Configuration();
     $partial = $configurationManager->get('articleView') == "partial";
 
-    $adblock_constants = file_get_contents("plugins/adblock/adblock_constants.php");
+    $adblock_constants = file_get_contents("adblock_constants.php");
     $adblock_constants = explode("\n", $adblock_constants);
 
     $adblock_params = array();
@@ -148,7 +148,7 @@ function adblock_plugin_setting_link(&$myUser) {
 }
 
 function adblock_plugin_setting_bloc(&$myUser) {
-    $adblock_constants = file_get_contents('plugins/adblock/adblock_constants.php');
+    $adblock_constants = file_get_contents('adblock_constants.php');
     $adblock_constants = explode("\n", $adblock_constants);
 
     $adblock_params = array();
@@ -253,10 +253,10 @@ function adblock_plugin_setting_update($_) {
 
         $elegant_degradation = (int) $_["adblock_elegant_degradation"];
 
-        if(file_put_contents("plugins/adblock/adblock_constants.php", "flash_enabled = ".$flash_enabled."\nflash_block = ".$flash_block."\nflash_list = ".$flash_list."\nimg_enabled = ".$img_enabled."\nimg_block = ".$img_block."\nimg_only_mobiles = ".$img_only_mobiles."\nimg_list = ".$img_list."\nelegant_degradation = ".$elegant_degradation))
+        if(file_put_contents("adblock_constants.php", "flash_enabled = ".$flash_enabled."\nflash_block = ".$flash_block."\nflash_list = ".$flash_list."\nimg_enabled = ".$img_enabled."\nimg_block = ".$img_block."\nimg_only_mobiles = ".$img_only_mobiles."\nimg_list = ".$img_list."\nelegant_degradation = ".$elegant_degradation))
             header('location: settings.php');
         else
-            exit("Unable to write parameters to plugins/adblock/adblock_constants.php. Check permissions on the folders.");
+            exit("Unable to write parameters to adblock_constants.php. Check permissions on the folders.");
     }
 }
 
