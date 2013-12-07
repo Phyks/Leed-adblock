@@ -2,3 +2,4 @@
 *.enabled.php
 TODO
 *.swp
+adblock/adblock_constants.php
