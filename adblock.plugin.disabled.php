@@ -198,7 +198,7 @@ function adblock_plugin_setting_bloc(&$myUser) {
                             <input type="radio" name="flash_adblock_default_behavior" value="0" id="flash_adblock_allowall" onchange="adblock_whitelist_blacklist(\'adblock_flash_whitelist_blacklist\', 0);" '.((!$flash_block) ? 'checked="checked"' : '').'/><label for="flash_adblock_allowall">Allow all contents (and use a blacklist)</label>
                         </p>
 
-                        <p><span id="adblock_flash_whitelist_blacklist">'.(($flash_block) ? 'Blacklist :' : 'Whitelist :').'</span></br>
+                        <p><span id="adblock_flash_whitelist_blacklist">'.(($flash_block) ? 'Whitelist :' : 'Blacklist :').'</span></br>
                         <textarea name="flash_adblock_list" rows="7">'.$flash_list.'</textarea>
                     </div>
                 </fieldset>
@@ -222,7 +222,7 @@ function adblock_plugin_setting_bloc(&$myUser) {
                             <input type="radio" name="img_adblock_only_mobiles" value="0" id="img_adblock_only_mobiles_no" '.((!$img_only_mobiles) ? 'checked="checked"' : '').'/><label for="img_adblock_only_mobiles_no">Block images on all devices</label>
                         </p>
 
-                        <p><span id="adblock_img_whitelist_blacklist">'.(($img_block) ? 'Blacklist :' : 'Whitelist :').'</span></br>
+                        <p><span id="adblock_img_whitelist_blacklist">'.(($img_block) ? 'Whitelist :' : 'Blacklist :').'</span></br>
                         <textarea name="img_adblock_list" rows="7">'.$img_list.'</textarea>
                     </div>
                 </fieldset>
