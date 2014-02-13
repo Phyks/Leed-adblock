@@ -1,0 +1,35 @@
+#adblockSettingsBloc {
+    display: none;
+}
+
+#adblockSettingsBloc textarea {
+    width: 75%;
+}
+
+#adblock_settings_submit {
+    text-align: center;
+}
+
+.blocked_image {
+    display: inline-block;
+    background-color: rgb(141, 141, 141);
+    color: rgb(241, 101, 41);
+    font-weight: bold;
+    text-align: center;
+    font-size: 2em;
+    padding: 0.2em;
+    cursor: pointer;
+    max-width: 100%;
+}
+
+.blocked_flash {
+    display: inline-block;
+    color: white; 
+    background-color: rgb(241, 101, 41);
+    font-weight: bold;
+    text-align: center;
+    font-size: 2em;
+    padding: 0.2em;
+    cursor: pointer;
+    max-width: 100%;
+}

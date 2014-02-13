@@ -75,3 +75,6 @@ quote where the original code comes from.
     in return.
                                                                      Phyks
 ---------------------------------------------------------------------------------
+
+Contributors:
+* @Cobalt74 - cobalt74 at gmail dot com - www.cobestran.com

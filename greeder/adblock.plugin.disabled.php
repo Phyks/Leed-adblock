@@ -4,7 +4,7 @@
 @author Phyks <phyks@phyks.me>
 @link http://www.phyks.me
 @licence BEERWARE (See README.md file)
-@version 2.0.0
+@version 2.0.1
 @description The adblock plugin for leed allows to block embedded flash contents and / or images in feeds. You can set it fine-grained for each feed. You can also disable images only for mobile devices.
  */
 
@@ -146,7 +146,7 @@ function adblock_plugin_setting_link(&$myUser) {
     $myUser = (isset($_SESSION['currentUser'])?unserialize($_SESSION['currentUser']):false);
     if($myUser!=false) {
         echo '
-            <li onclick="toggleBlocks(\'#adblockSettingsBloc\');"><a href="#adblockSettingsBloc">Adblock</a></li>';
+            <li onclick="toggleBlocks(\'#adblockSettingsBloc\');"><a href="#adblockSettingsBloc">'._t('P_ADBLOCK_TITLE').'</a></li>';
     }
 }
 
@@ -186,61 +186,64 @@ function adblock_plugin_setting_bloc(&$myUser) {
             echo '
                 <section id="adblockSettingsBloc" class="settingsPage">
                     <article>
-                        <h2>Plugin Adblock</h2>
-                        <p><em>Note: </em> You must enter a list of id of feeds in the blacklist / whitelist fields. This list must be one id per line. You can find the id of the feed you want in the address bar on the page of the feed in Leed  (http://LEED_URL/index.php?action=selectedFeed&feed=ID).</p>
+                        <h2>'._t('P_ADBLOCK_H2_TITLE').'</h2>
+                        <p>'._t('P_ADBLOCK_NOTE').'</p>
                         <form action="action.php?action=adblock_update" method="POST">
                             <fieldset>
                                 <div class="flash_adblockSettingsBlock">
-                                    <h3>Flash embedded contents:</h3>
+                                    <h3>'._t('P_ADBLOCK_OPT_FLASH_TITLE').'</h3>
                                     <p>
-                                        Enable / Disable blocking of flash contents in events:<br/>
-                                        <input type="radio" name="flash_adblock_enable" value="1" id="flash_adblock_block_enabled" '.(($flash_enabled) ? 'checked="checked"' : '').'/><label for="flash_adblock_block_enabled">Enabled</label><br/>
-                                        <input type="radio" name="flash_adblock_enable" value="0" id="flash_adblock_block_disable" '.((!$flash_enabled) ? 'checked="checked"' : '').'/> <label for="flash_adblock_block_disable">Disabled</label>
+                                        '._t('P_ADBLOCK_OPT_FLASH').'<br/>
+                                        <input type="radio" name="flash_adblock_enable" value="1" id="flash_adblock_block_enabled" '.(($flash_enabled) ? 'checked="checked"' : '').'/><label for="flash_adblock_block_enabled">'._t('P_ADBLOCK_OPT_ENABLED').'</label><br/>
+                                        <input type="radio" name="flash_adblock_enable" value="0" id="flash_adblock_block_disable" '.((!$flash_enabled) ? 'checked="checked"' : '').'/> <label for="flash_adblock_block_disable">'._t('P_ADBLOCK_OPT_DISABLED').'</label>
                                     </p>
 
-                            <p>Default behavior:<br/>
-                                <input type="radio" name="flash_adblock_default_behavior" value="1" id="flash_adblock_blockall" onchange="adblock_whitelist_blacklist(\'adblock_flash_whitelist_blacklist\', 1);" '.(($flash_block) ? 'checked="checked"' : '').'/><label for="flash_adblock_blockall">Block all contents (and use a whitelist)</label><br/>
-                                <input type="radio" name="flash_adblock_default_behavior" value="0" id="flash_adblock_allowall" onchange="adblock_whitelist_blacklist(\'adblock_flash_whitelist_blacklist\', 0);" '.((!$flash_block) ? 'checked="checked"' : '').'/><label for="flash_adblock_allowall">Allow all contents (and use a blacklist)</label>
-                            </p>
+                                    <p>'._t('P_ADBLOCK_DEFAULT_BEHAVIOR').'<br/>
+                                        <input type="radio" name="flash_adblock_default_behavior" value="1" id="flash_adblock_blockall" onchange="adblock_whitelist_blacklist(\'adblock_flash_whitelist_blacklist\', 1);" '.(($flash_block) ? 'checked="checked"' : '').'/><label for="flash_adblock_blockall">'._t('P_ADBLOCK_DEFAULT_BEHAVIOR_BLOCK').'</label><br/>
 
-                            <p><span id="adblock_flash_whitelist_blacklist">'.(($flash_block) ? 'Whitelist:' : 'Blacklist:').'</span></br>
-                            <textarea name="flash_adblock_list" rows="7">'.$flash_list.'</textarea>
-                        </div>
-                    </fieldset>
+                                        <input type="radio" name="flash_adblock_default_behavior" value="0" id="flash_adblock_allowall" onchange="adblock_whitelist_blacklist(\'adblock_flash_whitelist_blacklist\', 0);" '.((!$flash_block) ? 'checked="checked"' : '').'/><label for="flash_adblock_allowall">'._t('P_ADBLOCK_DEFAULT_BEHAVIOR_ALLOW').'</label>
+                                    </p>
 
-                    <fieldset>
-                        <div class="img_adblockSettingsBlock">
-                            <h3>Images:</h3>
+                                    <p><span id="adblock_flash_whitelist_blacklist">'.(($flash_block) ? _t('P_ADBLOCK_WHITELIST') : _t('P_ADBLOCK_BLACKLIST')).'</span></p>
+                                    <textarea name="flash_adblock_list" rows="7">'.$flash_list.'</textarea>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <div class="img_adblockSettingsBlock">
+                                    <h3>'._t('P_ADBLOCK_OPT_IMAGES_TITLE').'</h3>
+                                    <p>
+                                        '._t('P_ADBLOCK_OPT_IMAGES').'<br/>
+                                        <input type="radio" name="img_adblock_enable" value="1" id="img_adblock_block_enabled" '.(($img_enabled) ? 'checked="checked"' : '').'/><label for="img_adblock_block_enabled">'._t('P_ADBLOCK_OPT_ENABLED').'</label><br/>
+                                        <input type="radio" name="img_adblock_enable" value="0" id="img_adblock_block_disable" '.((!$img_enabled) ? 'checked="checked"' : '').'/><label for="img_adblock_block_disable">'._t('P_ADBLOCK_OPT_DISABLED').'</label>
+                                    </p>
+
+                                    <p>'._t('P_ADBLOCK_DEFAULT_BEHAVIOR').'<br/>
+                                        <input type="radio" name="img_adblock_default_behavior" value="1" id="img_adblock_blockall" onchange="adblock_whitelist_blacklist(\'adblock_img_whitelist_blacklist\', 1);" '.(($img_block) ? 'checked="checked"' : '').'/><label for="img_adblock_blockall">'._t('P_ADBLOCK_DEFAULT_BEHAVIOR_BLOCK').'</label><br/>
+                                        <input type="radio" name="img_adblock_default_behavior" value="0" id="img_adblock_allowall" onchange="adblock_whitelist_blacklist(\'adblock_img_whitelist_blacklist\', 0);" '.((!$img_block) ? 'checked="checked"' : '').'/><label for="img_adblock_allowall">'._t('P_ADBLOCK_DEFAULT_BEHAVIOR_ALLOW').'</label>
+                                    </p>
+
+                                    <p>'._t('P_ADBLOCK_OPT_IMAGES_MOBILE').'<br/>
+                                        <input type="radio" name="img_adblock_only_mobiles" value="1" id="img_adblock_only_mobiles_yes" '.(($img_only_mobiles) ? 'checked="checked"' : '').'/><label for="img_adblock_only_mobiles_yes">'._t('P_ADBLOCK_OPT_IMAGES_BLOCK_MOBILE').'</label><br/>
+                                        <input type="radio" name="img_adblock_only_mobiles" value="0" id="img_adblock_only_mobiles_no" '.((!$img_only_mobiles) ? 'checked="checked"' : '').'/><label for="img_adblock_only_mobiles_no">'._t('P_ADBLOCK_OPT_IMAGES_BLOCK_ALL').'</label>
+                                    </p>
+
+                                    <p><span id="adblock_img_whitelist_blacklist">'.(($img_block) ? _t('P_ADBLOCK_WHITELIST') : _t('P_ADBLOCK_BLACKLIST')).'</span></p>
+                                    <textarea name="img_adblock_list" rows="7">'.$img_list.'</textarea>
+                                </div>
+                            </fieldset>
+
                             <p>
-                                Enable / Disable blocking of images in events:<br/>
-                                <input type="radio" name="img_adblock_enable" value="1" id="img_adblock_block_enabled" '.(($img_enabled) ? 'checked="checked"' : '').'/><label for="img_adblock_block_enabled">Enabled</label><br/>
-                                <input type="radio" name="img_adblock_enable" value="0" id="img_adblock_block_disable" '.((!$img_enabled) ? 'checked="checked"' : '').'/><label for="img_adblock_block_disable">Disabled</label>
+                                '._t('P_ADBLOCK_OPT_DEGRADATION').'<br/>
+                                <input type="radio" name="adblock_elegant_degradation" value="1" id="adblock_elegant_degradation_yes" '.(($elegant_degradation) ? 'checked="checked"' : '').' '.((!$getimagesize_available) ? 'disabled' : '').'/><label for="adblock_elegant_degradation_yes">'._t('P_ADBLOCK_YES').'</label>'.((!$getimagesize_available) ? _t('P_ADBLOCK_OPT_DEGR_MSG') : '').'<br/>
+                                <input type="radio" name="adblock_elegant_degradation" value="0" id="adblock_elegant_degradation_no" '.((!$elegant_degradation) ? 'checked="checked"' : '').'/><label for="adblock_elegant_degradation_no">'._t('P_ADBLOCK_NO').'</label>
                             </p>
-
-                            <p>Default behavior:<br/>
-                                <input type="radio" name="img_adblock_default_behavior" value="1" id="img_adblock_blockall" onchange="adblock_whitelist_blacklist(\'adblock_img_whitelist_blacklist\', 1);" '.(($img_block) ? 'checked="checked"' : '').'/><label for="img_adblock_blockall">Block all contents (and use a whitelist)</label><br/>
-                                <input type="radio" name="img_adblock_default_behavior" value="0" id="img_adblock_allowall" onchange="adblock_whitelist_blacklist(\'adblock_img_whitelist_blacklist\', 0);" '.((!$img_block) ? 'checked="checked"' : '').'/><label for="img_adblock_allowall">Allow all contents (and use a blacklist)</label>
+                            <p id="adblock_settings_submit">
+                                <input type="submit" class="button" value="'._t('P_ADBLOCK_SAVE').'"/>
                             </p>
-
-                            <p>Block images only on mobile devices?<br/>
-                                <input type="radio" name="img_adblock_only_mobiles" value="1" id="img_adblock_only_mobiles_yes" '.(($img_only_mobiles) ? 'checked="checked"' : '').'/><label for="img_adblock_only_mobiles_yes">Only block images on mobile devices</label><br/>
-                                <input type="radio" name="img_adblock_only_mobiles" value="0" id="img_adblock_only_mobiles_no" '.((!$img_only_mobiles) ? 'checked="checked"' : '').'/><label for="img_adblock_only_mobiles_no">Block images on all devices</label>
-                            </p>
-
-                            <p><span id="adblock_img_whitelist_blacklist">'.(($img_block) ? 'Whitelist:' : 'Blacklist:').'</span></br>
-                            <textarea name="img_adblock_list" rows="7">'.$img_list.'</textarea>
-                        </div>
-                    </fieldset>
-                    <p>
-                        Elegant degradation (replace content with same-size content)?<br/>
-                        <input type="radio" name="adblock_elegant_degradation" value="1" id="adblock_elegant_degradation_yes" '.(($elegant_degradation) ? 'checked="checked"' : '').' '.((!$getimagesize_available) ? 'disabled' : '').'/><label for="adblock_elegant_degradation_yes">Yes</label>'.((!$getimagesize_available) ? ' <em>(Not available because the getimagesize seems to not be available on your system or allow_url_fopen is set to Off in php.ini)</em>' : '').'<br/>
-                        <input type="radio" name="adblock_elegant_degradation" value="0" id="adblock_elegant_degradation_no" '.((!$elegant_degradation) ? 'checked="checked"' : '').'/><label for="adblock_elegant_degradation_no">No</label>
-                    </p>
-                    <p id="adblock_settings_submit">
-                        <input type="submit" class="button" value="Save"/>
-                    </p>
-                </form>
-            </section>';
+                        </form>
+                    </article>
+                </section>';
     }
 }
 
