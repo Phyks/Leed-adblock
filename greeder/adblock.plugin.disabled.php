@@ -69,7 +69,7 @@ function adblock_plugin_treat_events(&$events) {
         $filter_img = false;
     }
     $img_except_list = explode(',', trim($adblock_params["img_list"], "\t\n\r\0\x0B,"));
-    $img_except_list = adblock_trim_list($flash_except_list);
+    $img_except_list = adblock_trim_list($img_except_list);
 
     $elegant_degradation = (isset($adblock_params["elegant_degradation"]) && $adblock_params["elegant_degradation"] == "1") ? true : false;
 
